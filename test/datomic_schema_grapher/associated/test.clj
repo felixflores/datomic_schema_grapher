@@ -14,8 +14,22 @@
                         (test-case)
                         (delete-database! uri))))
 
-(deftest a-test
-  (testing "Returns a vector of referenced entity ids"
+(defn entity2 []
+  (let [db (database uri)]
+    (->> (d/q '[:find ?e
+                :where [?e :entity2/attr "Attribute 2"]]
+              db)
+         (ffirst)
+         (d/entity db))))
+
+(deftest test-entities
+  (testing "Returns a collection of referenced entities"
+    (let [db (database uri)]
+      (is (= (first (entities :entity1/entity2 db)) (entity2)))
+      (is (= (:db:id (first (entities :entity2/attr db))) nil)))))
+
+(deftest test-namespaces
+  (testing "Returns a collection of referenced namespaces"
     (let [db (database uri)]
       (is (= ((namepspaces (entities :entity1/entity2 db)) :entity2)))
       (is (= ((namepspaces (entities :entity1/self db)) :entity1)))

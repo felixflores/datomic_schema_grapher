@@ -10,4 +10,5 @@
   :entity1/entity2 #db/id [:db.part/user -4]}
 
  {:db/id #db/id [:db.part/user -4]
-  :entity2/entity1 [#db/id [:db.part/user -1] #db/id [:db.part/user -2]]}]
+  :entity2/entity1 [#db/id [:db.part/user -1] #db/id [:db.part/user -2]]
+  :entity2/attr "Attribute 2"}]
