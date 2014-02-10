@@ -1,4 +1,4 @@
-(ns datomic-schema-grapher.associations
+(ns datomic-schema-grapher.associated
   (:require [datomic.api :as d]))
 
 (defn- references-ids
@@ -11,14 +11,13 @@
            attr-name)
       first))
 
-(defn- entities
+(defn entities
   [attr-name database]
   (map #(d/entity database %) (references-ids attr-name database)))
 
-(defn referencing-namepspaces
-  [attr-name database]
-  (->> (entities attr-name database)
-       (map keys)
+(defn namepspaces
+  [entities]
+  (->> (map keys entities)
        (flatten)
        (map namespace)
        (set)))
