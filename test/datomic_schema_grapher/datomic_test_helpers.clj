@@ -7,7 +7,7 @@
         read-edn #(read-string (slurp (str project-dir %)))]
     (do
       (println "Transacting edn: " file)
-      @(d/transact connection (read-edn file)))))
+      (println @(d/transact connection (read-edn file)) "\n -----------"))))
 
 (defn prepare-database!
   [uri schema fixtures]
