@@ -9,13 +9,12 @@
               [_ ?attr-name ?refs]]
             database
             attr-name)
-       (first)
-       (map #(d/entity database %))))
+       (map #(d/entity database (first %)))))
 
 
-(defn namepspaces
+(defn namespaces
   [entities]
-  (->> (map keys entities)
-       (flatten)
-       (map namespace)
-       (set)))
+  (let [attrs (flatten (map keys entities))]
+    (if (every? nil? attrs)
+      #{}
+      (set (map namespace attrs)))))

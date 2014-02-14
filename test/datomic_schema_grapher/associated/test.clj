@@ -1,7 +1,7 @@
 (ns datomic-schema-grapher.associated.test
   (:require [clojure.test :refer :all]
             [datomic-schema-grapher.datomic-test-helpers :refer (prepare-database! delete-database! database)]
-            [datomic-schema-grapher.associated :refer (namepspaces entities)]
+            [datomic-schema-grapher.associated :refer (namespaces entities)]
             [datomic.api :as d]))
 
 (def uri "datomic:mem://associated-test")
@@ -31,7 +31,8 @@
 (deftest test-namespaces
   (testing "Returns a collection of referenced namespaces"
     (let [db (database uri)]
-      (is (= ((namepspaces (entities :entity1/entity2 db)) :entity2)))
-      (is (= ((namepspaces (entities :entity1/self db)) :entity1)))
-      (is (= ((namepspaces (entities :entity1/multi db)) [:entity1 :entity2])))
-      (is (= ((namepspaces (entities :entity2/entity1 db)) :entity1))))))
+      (is (= (namespaces (entities :entity1/self db)) #{"entity1"}))
+      (is (= (namespaces (entities :entity1/multi db)) #{"entity1" "entity2"}))
+      (is (= (namespaces (entities :entity1/entity2 db)) #{"entity2"}))
+      (is (= (namespaces (entities :entity2/entity1 db)) #{"entity1"}))
+      (is (= (namespaces (entities :entity2/attr db)) #{})))))
