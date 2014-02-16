@@ -7,15 +7,15 @@
         read-edn #(read-string (slurp (str project-dir %)))]
     (do
       (println "Transacting edn: " file)
-      (println @(d/transact connection (read-edn file)) "\n -----------"))))
+      @(d/transact connection (read-edn file)))))
 
 (defn prepare-database!
-  [uri schema fixtures]
-  (when (d/create-database uri)
-    (let [connection (d/connect uri)]
-      (do
-        (transact-edn connection schema)
-        (transact-edn connection fixtures)))))
+  ([uri schema]
+   (when (d/create-database uri)
+     (transact-edn (d/connect uri) schema)))
+  ([uri schema fixtures]
+   (prepare-database! uri schema)
+   (transact-edn (d/connect uri) fixtures)))
 
 (defn delete-database!
   [uri]

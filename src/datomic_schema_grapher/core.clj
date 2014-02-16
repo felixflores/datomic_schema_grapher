@@ -1,10 +1,6 @@
 (ns datomic-schema-grapher.core
-  (:require [clojure.string :refer (join)])
-  (:require [dorothy.core :refer (digraph subgraph)]))
-
-(defn read-schema
-  [schema-files]
-  (merge (read-string (slurp schema-files))))
+  (:require [clojure.string :refer (join)]
+            [dorothy.core :refer (digraph subgraph)]))
 
 (defn to-dot
   [schema datoms])
