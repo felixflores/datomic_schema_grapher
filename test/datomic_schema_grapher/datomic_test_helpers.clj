@@ -22,3 +22,11 @@
   (d/delete-database uri))
 
 (defn database [uri] (d/db (d/connect uri)))
+
+(defn setup
+  [before after]
+  (fn [test-case]
+    (do
+      (before)
+      (test-case)
+      (after))))

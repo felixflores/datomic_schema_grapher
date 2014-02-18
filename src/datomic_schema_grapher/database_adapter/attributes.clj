@@ -13,8 +13,6 @@
               [?attr :db/ident ?name]]
             database)
        (remove #(datomic-attribute? (last %)))
-       (map #(d/entity database (first %)))))
+       (map #(d/entity database (first %)))
+       (group-by #(namespace (:db/ident %)))))
 
-(defn namespaced
-  [attributes]
-  (group-by #(namespace (:db/ident %)) attributes))
