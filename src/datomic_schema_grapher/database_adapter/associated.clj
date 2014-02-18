@@ -1,24 +1,16 @@
 (ns datomic-schema-grapher.database-adapter.associated
   (:require [datomic.api :as d]))
 
-(defn- ref-entities
+(defn ref-attrs
   [attr-name database]
-  (->> (d/q '[:find ?refs
-              :in $ ?attr-name
-              :where
-              [_ ?attr-name ?refs]]
-            database
-            attr-name)
-       (map #(d/entity database (first %)))))
-
-(defn- ref-namespaces
-  [entities]
-  (let [attrs (flatten (map keys entities))]
-    (if (every? nil? attrs)
-      #{}
-      (set (map namespace attrs)))))
-
-(defn namespaces
-  [attr-name database]
-  (-> (ref-entities attr-name database)
-      (ref-namespaces)))
+  (->>  (d/q '[:find ?ref-name
+               :in $ ?attr-name
+               :where
+               [_ ?attr-name ?ref]
+               [?ref ?ref-attr]
+               [?ref-attr :db/ident ?ref-name]]
+             database
+             attr-name)
+       (map first)
+       (map namespace)
+       (set)))

@@ -16,8 +16,7 @@
 (deftest test-referencing-namespaces
   (testing "Returns a collection of referenced namespaces"
     (let [db (database uri)]
-      (is (= (associated/namespaces :entity1/self db) #{"entity1"}))
-      (is (= (associated/namespaces :entity1/multi db) #{"entity1" "entity2"}))
-      (is (= (associated/namespaces :entity1/entity2 db) #{"entity2"}))
-      (is (= (associated/namespaces :entity2/entity1 db) #{"entity1"}))
-      (is (= (associated/namespaces :entity2/attr db) #{})))))
+      (is (= (associated/ref-attrs :entity1/self db) #{"entity1"}))
+      (is (= (associated/ref-attrs :entity1/multi db) #{"entity1" "entity2"}))
+      (is (= (associated/ref-attrs :entity1/entity2 db) #{"entity2"}))
+      (is (= (associated/ref-attrs :entity2/entity1 db) #{"entity1"})))))

@@ -11,4 +11,4 @@
 (defn referenced-namespaces
   "Returns all entities the references a given datomic attribute."
   [attribute database]
-  (associated/namespaces attribute database))
+  (associated/ref-attrs attribute database))
