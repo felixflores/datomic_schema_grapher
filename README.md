@@ -1,14 +1,20 @@
 # datomic-schema-grapher
 
-A Clojure library designed to ... well, that part is up to you.
+Visually see the datomic schema. Uses graphviz.
+
+## Installation
+
+brew install graphviz
+lein deps
 
 ## Usage
 
-FIXME
+This project is still in the early stages of development.
+The API for this will change.
+
+See src/datomic_schema_grapher/core.clj for sample usage.
+You should see the schema after evaluating this file.
 
 ## License
 
-Copyright © 2014 FIXME
-
-Distributed under the Eclipse Public License either version 1.0 or (at
-your option) any later version.
+Copyright © 2014 MIT
