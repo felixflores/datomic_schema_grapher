@@ -5,10 +5,10 @@
             [datomic-schema-grapher.database :refer :all]))
 
 (def uri "datomic:mem://database-test")
-(def schema "/test/datomic_schema_grapher/database/schema.edn")
+(def db-schema "/test/datomic_schema_grapher/database/schema.edn")
 (def fixtures "/test/datomic_schema_grapher/database/fixtures.edn")
 
-(defn before [] (prepare-database! uri schema fixtures))
+(defn before [] (prepare-database! uri db-schema fixtures))
 (defn after [] (delete-database! uri))
 (use-fixtures :each (setup-surround before after))
 
@@ -28,6 +28,6 @@
 
 (deftest test-all
   (testing "Returns all attribute entities of the database"
-    (let [attrs (namespaces (database uri))]
+    (let [attrs (schema (database uri))]
       (is (= (sort (map :db/ident (attrs "entity1"))) [:entity1/entity2 :entity1/multi :entity1/self]))
       (is (= (sort (map :db/ident (attrs "entity2"))) [:entity2/attr :entity2/entity1])))))

@@ -5,7 +5,7 @@
   [identifier]
   ((complement empty?) (re-matches #"(db|fressian).*" (namespace identifier))))
 
-(defn namespaces
+(defn schema
   "Returns all user defined datomic attribute as entities,
   grouped by their common namespace."
   [database]

@@ -6,19 +6,13 @@
                          :db/cardinality :db.cardinality.one
                          :someother/thing 21}]})
 
+(deftest test-parse-schema
+  (testing "Parsing of schema for dorothy"
+    (is (= (parse 0 schema)
+           {"entity1" [:cluster_0 [{:db/cardinality :db.cardinality.one
+                                    :db/ident :entity1/attr}]]}))))
+
 (deftest test-subgraph
   (testing "Create dot file form mapping"
-    (is (= (to-dot schema)
+    (is (= (to-dot (parse schema))
            "digraph {\nsubgraph cluster_0 {\ngraph [label=entity1,style=filled,color=lightgrey];\nnode [color=white,style=filled];\nattr;\n} ;\n} "))))
-
-;;     (let [namespaces (schema/namespaces (database uri))]
-;;
-;;       (is (= (create-subgraph [:cluster_0 ["entity1" (namespaces "entity1")]])
-;;              '(subgraph :cluster_0 [{:label "entity1"}
-;;                                     (node-attr {:style :filled})
-;;                                     (:entity1/attr2 :entity1/attr3 :entity1/attr1)])))
-;;
-;;       (is (= (create-subgraph [:cluster_1 ["entity1" (namespaces "entity2")]])
-;;              '(subgraph :cluster_1 [{:label "entity1"}
-;;                                     (node-attr {:style :filled})
-;;                                     (:entity2/attr1 :entity2/ref1 :entity2/attr2)]))))))
