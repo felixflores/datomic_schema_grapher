@@ -5,9 +5,7 @@
   [connection file]
   (let [project-dir (System/getProperty "user.dir")
         read-edn #(read-string (slurp (str project-dir %)))]
-    (do
-      (println "Transacting edn: " file)
-      @(d/transact connection (read-edn file)))))
+    @(d/transact connection (read-edn file))))
 
 (defn prepare-database!
   ([uri schema]
@@ -22,11 +20,3 @@
   (d/delete-database uri))
 
 (defn database [uri] (d/db (d/connect uri)))
-
-(defn setup
-  [before after]
-  (fn [test-case]
-    (do
-      (before)
-      (test-case)
-      (after))))

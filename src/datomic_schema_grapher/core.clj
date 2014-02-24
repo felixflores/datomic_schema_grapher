@@ -1,15 +1,11 @@
-(ns datomic-schema-grapher.core)
-;;   (:require [clojure.string :refer (join)]
-;;             [dorothy.core :refer (digraph subgraph)]))
-;;
-;; (defn to-dot
-;;   [schema datoms])
-;;
-;; (defn map-entities
-;;   [schema])
-;;
-;; (defn graph-schema
-;;   [files datoms]
-;;   (let [schema (read-schema files)]
-;;     (do
-;;       (to-dot schema datoms))))
+(ns datomic-schema-grapher.core
+  (:require [dorothy.core :as dor]
+            [datomic.api :as d]
+            [datomic-schema-grapher.dot :refer :all]
+            [datomic-schema-grapher.datomic-test-helpers :refer :all]))
+
+(def uri "datomic:mem://grapher")
+(def schema "/resources/sample.edn")
+(prepare-database! uri schema)
+
+(show-graph (schema/namespaces (database uri)))

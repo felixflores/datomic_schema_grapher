@@ -1,48 +1,47 @@
 [{:db/id #db/id[:db.part/db]
-  :db/ident :quote/text
+  :db/ident :entity1/attr1
   :db/valueType :db.type/string
   :db/cardinality :db.cardinality/one
   :db.install/_attribute :db.part/db}
 
  {:db/id #db/id[:db.part/db]
-  :db/ident :quote/timestamp
-  :db/valueType :db.type/instant
+  :db/ident :entity1/attr2
+  :db/valueType :db.type/float
   :db/cardinality :db.cardinality/one
   :db.install/_attribute :db.part/db}
 
  {:db/id #db/id[:db.part/db]
-  :db/ident :quote/user
+  :db/ident :entity1/attr3
+  :db/valueType :db.type/boolean
+  :db/cardinality :db.cardinality/one
+  :db.install/_attribute :db.part/db}
+
+ {:db/id #db/id[:db.part/db]
+  :db/ident :entity2/attr1
+  :db/valueType :db.type/string
+  :db/cardinality :db.cardinality/many
+  :db.install/_attribute :db.part/db}
+
+ {:db/id #db/id[:db.part/db]
+  :db/ident :entity2/attr2
+  :db/valueType :db.type/string
+  :db/cardinality :db.cardinality/one
+  :db.install/_attribute :db.part/db}
+
+ {:db/id #db/id[:db.part/db]
+  :db/ident :entity2/ref1
   :db/valueType :db.type/ref
   :db/cardinality :db.cardinality/one
   :db.install/_attribute :db.part/db}
 
  {:db/id #db/id[:db.part/db]
-  :db/ident :user/handle
+  :db/ident :entity3/attr1
   :db/valueType :db.type/string
   :db/cardinality :db.cardinality/one
   :db.install/_attribute :db.part/db}
 
  {:db/id #db/id[:db.part/db]
-  :db/ident :user/first-name
-  :db/valueType :db.type/string
-  :db/cardinality :db.cardinality/one
-  :db.install/_attribute :db.part/db}
-
- {:db/id #db/id[:db.part/db]
-  :db/ident :user/last-name
-  :db/valueType :db.type/string
-  :db/cardinality :db.cardinality/one
-  :db.install/_attribute :db.part/db}
-
- {:db/id #db/id[:db.part/db]
-  :db/ident :user/email
-  :db/valueType :db.type/string
-  :db/cardinality :db.cardinality/one
-  :db.install/_attribute :db.part/db}
-
- {:db/id #db/id[:db.part/db]
-  :db/ident :user/follow
+  :db/ident :entity3/ref1
   :db/valueType :db.type/ref
   :db/cardinality :db.cardinality/many
   :db.install/_attribute :db.part/db}]
-

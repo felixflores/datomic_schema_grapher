@@ -5,6 +5,7 @@
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[org.clojure/clojure "1.5.1"]
                  [com.datomic/datomic-pro "0.9.4532"]
-                 [dorothy "0.0.4"]]
+                 [dorothy "0.0.5"]
+                 [org.clojure/tools.trace "0.7.6"]]
   :plugins [[quickie "0.2.5"]])
 
