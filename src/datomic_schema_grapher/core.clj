@@ -7,9 +7,7 @@
 (def schema "/resources/sample.edn")
 (prepare-database! uri schema)
 
-(->> (database uri)
-     db/schema
-     dot/parse
+(->> (db/schema (database uri))
      dot/show)
 
 

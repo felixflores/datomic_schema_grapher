@@ -26,8 +26,8 @@
       (is (= (ref-attrs :entity1/entity2 db) #{"entity2"}))
       (is (= (ref-attrs :entity2/entity1 db) #{"entity1"})))))
 
-(deftest test-all
+(deftest test-schema
   (testing "Returns all attribute entities of the database"
-    (let [attrs (schema (database uri))]
-      (is (= (sort (map :db/ident (attrs "entity1"))) [:entity1/entity2 :entity1/multi :entity1/self]))
-      (is (= (sort (map :db/ident (attrs "entity2"))) [:entity2/attr :entity2/entity1])))))
+    (let [s ((schema (database uri)) :db/ident)]
+      (is (= (sort (map :db/ident (s "entity1"))) [:entity1/entity2 :entity1/multi :entity1/self]))
+      (is (= (sort (map :db/ident (s "entity2"))) [:entity2/attr :entity2/entity1])))))
