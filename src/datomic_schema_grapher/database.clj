@@ -9,18 +9,13 @@
   "Returns all user defined datomic attribute as entities,
   grouped by their common namespace."
   [database]
-  (let [entities (->> (d/q '[:find ?attr ?name
-                             :where
-                             [_ :db.install/attribute ?attr]
-                             [?attr :db/ident ?name]]
-                           database)
-                      (remove #(datomic-attribute? (last %)))
-                      (map #(d/entity database (first %))))]
-    (fn
-      [attr]
-      (if (= attr :db/ident)
-        (group-by #(namespace (attr %)) entities)
-        (group-by attr entities)))))
+  (->> (d/q '[:find ?attr ?name
+              :where
+              [_ :db.install/attribute ?attr]
+              [?attr :db/ident ?name]]
+            database)
+       (remove #(datomic-attribute? (last %)))
+       (map #(d/entity database (first %)))))
 
 (defn ref-attrs
   "Returns all entities the references a given datomic attribute."
@@ -33,13 +28,14 @@
                [?ref-attr :db/ident ?ref-name]]
              database
              attr-name)
-       (map first)
+       (apply concat)
        (map namespace)
        (set)))
 
-(defn all-refs
+(defn references
   [database]
-  (->> ((schema database) :db/valueType)
+  (->> (group-by :db/valueType (schema database))
        :db.type/ref
        (map :db/ident)
-       (map (fn [r] [r (ref-attrs r database)]))))
+       (map #([% (ref-attrs % database)]))))
+
