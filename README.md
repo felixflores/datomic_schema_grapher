@@ -3,10 +3,10 @@
 Visually see the datomic schema. Uses graphviz.
 
 ## Installation
-
+```
 brew install graphviz
 lein deps
-
+```
 ## Usage
 
 This project is still in the early stages of development.
