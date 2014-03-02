@@ -17,6 +17,7 @@
 
 (defn delete-database!
   [uri]
-  (d/delete-database uri))
+  (do
+    (d/delete-database uri)))
 
 (defn database [uri] (d/db (d/connect uri)))

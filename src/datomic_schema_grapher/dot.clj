@@ -4,75 +4,52 @@
 
 (defn group-as-entities
   [schema]
-  (group-by #(namespace (% :db/ident)) schema))
+  (group-by #(namespace (:db/ident %)) schema))
 
-(defn cluster-names
-  []
-  (iterate
-    (fn
-      [cluster-id]
-      (let [[cname cid] (clojure.string/split cluster-id #"\_")]
-        (str cname "_" (inc (Integer/parseInt cid)))))
-    "cluster_0"))
-
-(defn schema-cluster-map
-  [schema]
-  (let [namespaces (keys (group-as-entities schema))]
-    (->> (interleave namespaces (take (count namespaces) (cluster-names)))
-         (apply hash-map))))
-
-(defn node-name
+(defn is-a-ref?
   [attr]
-  (subs (str (attr :db/ident)) 1))
+  (= (:db/valueType attr) :db.type/ref))
 
-(defn cardinality-one?
-  [attr]
-  (= (attr :db/cardinality) :db.cardinality.one))
+(defn attribute-label
+  [attribute]
+  (let [attr-name (name (:db/ident attribute))
+        attr-type (name (:db/valueType attribute))
+        attr-port (when (is-a-ref? attribute) (str "<" attr-name ">"))]
+    (str attr-port attr-name " : " attr-type)))
 
 (defn node-label
-  [attr]
-  (->> (map attr [:db/ident :db/valueType])
-       (map name)
-       (join "\n")))
+  [attributes]
+  (let [entity-name (namespace (:db/ident (first attributes)))
+        attr-labels (map attribute-label attributes)]
+    {:label (str "{\n" entity-name "\n|" (apply str (interpose "|" attr-labels)) "}")
+     :shape "Mrecord"}))
 
-(defn dot-attribute
-  [attr]
-  [(node-name attr) {:label (node-label attr)
-                     :peripheries (if (cardinality-one? attr) 0 2)}])
-
-
-;; '([:entity1/multi #{"entity1" "entity2"}]
-;;   [:entity1/entity2 #{"entity2"}]
-;;   [:entity2/entity1 #{"entity1"}]
-;;   [:entity1/self #{"entity1"}])
-;; [["entity1/multi" "quote/user" {:lhead :cluster_1}]]
-
-;; (defn- dot-relationships
-;;   [schema])
-;;
-(defn dot-subgraphs
+(defn dot-nodes
   [schema]
-  (for [entity (group-as-entities schema)
-        :let [entity-name (first entity)
-              entity-attrs (last entity)]]
+  (for [[entity-name attributes] (group-as-entities schema)]
+    [entity-name (node-label attributes)]))
 
-    (do
-      (println "==========\n"
-               (concat [{:label entity-name :style "rounded, filled" :color :lightgrey}]
-                       [(node-attrs {:style :filled :color :white})]
-                       (vec (map dot-attribute entity-attrs))) 
-               "\n========")
-    (subgraph ((schema-cluster-map schema) entity-name)
-              (concat [{:label entity-name :style "rounded, filled" :color :lightgrey}]
-                      [(node-attrs {:style :filled :color :white})]
-                      (vec (map dot-attribute entity-attrs)))))))
-;;
-;; (defn to-dot
-;;   [schema relationships]
-;;   (dot (digraph (concat [{:compound :true}]
-;;                         (dot-subgraph schema)
-;;                         (dot-relationships relationships schema)))))
-;;
-;; (defn show
-;;   [schema relationships]
-;;   (show! (to-dot schema relationships)))
+(defn dot-relationship
+  [[root dest-label cardinality]]
+  (let [root-label (str (namespace root) ":" (name root))
+        dest-ref-label (str dest-label "_ref")
+        cardinality-label {:arrowhead (if (= cardinality "one") "tee" "crown")}]
+    (if (= (namespace root) dest-label)
+      [[dest-ref-label {:label dest-label :style "dotted,rounded"}]
+       [root-label dest-ref-label cardinality-label]]
+      [[root-label dest-label cardinality-label]])))
+
+(defn dot-relationships
+  [relationships]
+  (reduce #(concat %1 %2) (map dot-relationship relationships)))
+
+(defn to-dot
+  [schema relationships]
+  (dot (digraph (concat [(node-attrs {:shape "record"})]
+                        (dot-nodes schema)
+                        (when (not-empty relationships)
+                          (dot-relationships relationships))))))
+
+(defn show
+  [schema relationships]
+  (show! (to-dot schema relationships)))

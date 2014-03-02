@@ -17,7 +17,7 @@
        (remove #(datomic-attribute? (last %)))
        (map #(d/entity database (first %)))))
 
-(defn ref-attrs
+(defn ref-entities
   "Returns all entities the references a given datomic attribute."
   [attr-name database]
   (->>  (d/q '[:find ?ref-name
@@ -34,8 +34,13 @@
 
 (defn references
   [database]
-  (->> (group-by :db/valueType (schema database))
-       :db.type/ref
-       (map :db/ident)
-       (map #([% (ref-attrs % database)]))))
+  (let [ref-attrs (->> (schema database)
+                       (group-by :db/valueType)
+                       :db.type/ref)]
+    (->> (for [ref-attr ref-attrs]
+           (interleave (repeat (:db/ident ref-attr))
+                       (ref-entities (:db/ident ref-attr) database)
+                       (repeat (name (:db/cardinality ref-attr)))))
+         flatten
+         (partition 3))))
 

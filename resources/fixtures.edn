@@ -1,0 +1,28 @@
+[{:db/id #db/id[:db.part/user -1]
+  :user/first-name "Felix"
+  :user/last-name "Flores"
+  :user/handle "felixflores"
+  :user/email "felixflores@gmail.com"
+  :user/assets #db/id [:db.part/user -5]
+  :user/follows #db/id [:db.part/user -3]}
+
+ {:db/id #db/id[:db.part/user -1]
+  :user/assets #db/id [:db.part/user -4]}
+
+ {:db/id #db/id[:db.part/user -3]
+  :user/first-name "Sara"
+  :user/last-name "Meiggs"
+  :user/handle "sarameiggs"
+  :user/email "sarameiggs@gmail.com"}
+
+ {:db/id #db/id[:db.part/user -2]
+  :quote/body "Like is like a box of chocolates."
+  :quote/user #db/id[:db.part/user -1]}
+
+ {:db/id #db/id[:db.part/user -4]
+  :car/model "Mini Cooper S"
+  :car/mileage 15000}
+
+ {:db/id #db/id[:db.part/user -5]
+  :bank/account-number "21232143"
+  :bank/amount 15000}]

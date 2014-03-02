@@ -14,30 +14,32 @@
 
 (deftest test-datomic-attribute?
   (testing "Determines if a keyword is a datomic attributes"
-    (is (= (datomic-attribute? :db/db) true))
-    (is (= (datomic-attribute? :fressian/tag) true))
-    (is (= (datomic-attribute? :something/else) false))))
+    (are [x y] (= (datomic-attribute? x) y)
+         :db/db true
+         :fressian/tag true
+         :something/else false)))
 
 (deftest test-schema
   (testing "Returns all attribute entities of the database"
-    (let [s ((schema (database uri)) :db/ident)]
-      (is (= (sort (map :db/ident (s "entity1"))) [:entity1/entity2 :entity1/multi :entity1/self]))
-      (is (= (sort (map :db/ident (s "entity2"))) [:entity2/attr :entity2/entity1])))))
+    (is (= (->> (schema (database uri))
+                (map :db/ident))
+           '(:entity1/multi :entity1/entity2 :entity2/entity1 :entity2/attr :entity1/self)))))
 
 (deftest test-referencing-namespaces
   (testing "Returns a collection of referenced namespaces"
     (let [db (database uri)]
-      (is (= (ref-attrs :entity1/self db) #{"entity1"}))
-      (is (= (ref-attrs :entity1/multi db) #{"entity1" "entity2"}))
-      (is (= (ref-attrs :entity1/entity2 db) #{"entity2"}))
-      (is (= (ref-attrs :entity2/entity1 db) #{"entity1"})))))
+      (are [x y] (= (ref-entities x db) y)
+           :entity1/self #{"entity1"}
+           :entity1/multi #{"entity1" "entity2"}
+           :entity1/entity2 #{"entity2"}
+           :entity2/entity1 #{"entity1"}))))
 
 (deftest test-references
   (testing "Returns a mapping of all references in the database"
-    (let [db (database uri)]
-      (is (= (references db) '([:entity1/multi #{"entity1" "entity2"}]
-                               [:entity1/entity2 #{"entity2"}]
-                               [:entity2/entity1 #{"entity1"}]
-                               [:entity1/self #{"entity1"}]))))))
-
-
+    (let [refs (references (database uri))]
+      (is (= (references (database uri))
+             '((:entity1/multi "entity1" "many")
+               (:entity1/multi "entity2" "many")
+               (:entity1/entity2 "entity2" "one")
+               (:entity2/entity1 "entity1" "many")
+               (:entity1/self "entity1" "many")))))))
