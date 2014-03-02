@@ -1,6 +1,6 @@
 (ns datomic-schema-grapher.dot
   (:require [clojure.string :refer (split join)]
-            [dorothy.core :refer (subgraph node-attrs digraph dot show! graph-attrs)]))
+            [dorothy.core :refer (subgraph node-attrs digraph dot show! save! graph-attrs)]))
 
 (defn group-as-entities
   [schema]
