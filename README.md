@@ -9,11 +9,9 @@ lein deps
 ```
 ## Usage
 
-This project is still in the early stages of development.
-The API for this will change.
-
-See src/datomic_schema_grapher/core.clj for sample usage.
-You should see the schema after evaluating this file.
+```
+lein graph-datomic <database-uri>
+```
 
 ## License
 
