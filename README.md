@@ -3,15 +3,49 @@
 Visually see the datomic schema. Uses graphviz.
 
 ## Installation
+
+Add to your `:dependencies`
+
+```clojure
+[datomic-schema-grapher "0.0.1"]
 ```
+
+If you want to use the lein plugin you must also add the dependency to your project's :plugins vector.
+
+```bash
 brew install graphviz
 lein deps
 ```
-## Usage
 
+## REPL Usage
+
+```clojure
+(require '[datomic-schema-grapher.core :refer (graph-datomic)])
+(graph-datomic "datomic:mem://example")
+;; pops up a swing UI
 ```
-lein graph-datomic <database-uri>
+
+```clojure
+(graph-datomic "datomic:mem://example" :save-as "the-schema.dot")
+;; writes graphviz to file and pops up swing UI
 ```
+
+```clojure
+(graph-datomic "datomic:mem://example" :save-as "the-schema.dot" :no-display true)
+;; does not pop up a display
+```
+
+## Plugin
+
+```bash
+lein graph-datomic datomic:mem://example
+```
+
+This project is still in the early stages of development.
+The API is likely to change.
+
+See src/datomic_schema_grapher/core.clj for sample usage.
+You should see the schema after evaluating this file.
 
 ## License
 
