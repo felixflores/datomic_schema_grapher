@@ -1,6 +1,10 @@
 (ns datomic-schema-grapher.dot
   (:require [clojure.string :refer (split join)]
+            [hiccup.core :refer (html)]
             [dorothy.core :refer (subgraph node-attrs digraph dot show! save! graph-attrs)]))
+
+(def light-grey "#808080")
+(def edge-colors ["#C0493F" "#C0573F" "#C06C3F" "#C0823F" "#C0913F"])
 
 (defn group-as-entities
   [schema]
@@ -10,34 +14,40 @@
   [attr]
   (= (:db/valueType attr) :db.type/ref))
 
-(defn attribute-label
+(defn is-unique?
+  [attr]
+  (= (:db/unique attr) :db.unique/identity))
+
+(defn attr-row-label
   [attribute]
-  (let [attr-name (name (:db/ident attribute))
-        attr-type (name (:db/valueType attribute))
-        attr-port (when (is-a-ref? attribute) (str "<" attr-name ">"))]
-    (str attr-port attr-name " : " attr-type)))
+  (let [label (str (name (:db/ident attribute)) " : " (name (:db/valueType attribute)))]
+    (if (is-unique? attribute)
+      (html [:font {:color "red"} label])
+      label)))
 
 (defn node-label
   [attributes]
-  (let [entity-name (namespace (:db/ident (first attributes)))
-        attr-labels (map attribute-label attributes)]
-    {:label (str "{\n" entity-name "\n|" (apply str (interpose "|" attr-labels)) "}")
-     :shape "Mrecord"}))
+  (let [entity-name (namespace (:db/ident (first attributes)))]
+    (html [:table {:port entity-name :border 0 :color light-grey :cellborder 1 :cellspacing 0}
+           [:tr [:td {:bgcolor "gray"} entity-name]]
+           (for [attribute attributes
+                 :let [attr-name (name (:db/ident attribute))]]
+             [:tr [:td (when (is-a-ref? attribute) {:port attr-name}) (attr-row-label attribute)]])])))
 
 (defn dot-nodes
   [schema]
   (for [[entity-name attributes] (group-as-entities schema)]
-    [entity-name (node-label attributes)]))
+    [entity-name {:label (node-label attributes)}]))
 
 (defn dot-relationship
   [[root dest-label cardinality]]
   (let [root-label (str (namespace root) ":" (name root))
         dest-ref-label (str dest-label "_ref")
-        cardinality-label {:arrowhead (if (= cardinality "one") "tee" "crown")}]
+        edge-attrs {:arrowhead (if (= cardinality "one") "tee" "crow")}]
     (if (= (namespace root) dest-label)
-      [[dest-ref-label {:label dest-label :style "dotted,rounded"}]
-       [root-label dest-ref-label cardinality-label]]
-      [[root-label dest-label cardinality-label]])))
+      [[dest-ref-label {:label dest-label :shape "rectangle" :style "dotted,rounded" :color light-grey}]
+       [root-label dest-ref-label edge-attrs]]
+      [[root-label (str dest-label ":" dest-label) edge-attrs]])))
 
 (defn dot-relationships
   [relationships]
@@ -45,7 +55,7 @@
 
 (defn to-dot
   [schema relationships]
-  (dot (digraph (concat [(node-attrs {:shape "record"})]
+  (dot (digraph (concat [(node-attrs {:shape "plaintext"})]
                         (dot-nodes schema)
                         (when (not-empty relationships)
                           (dot-relationships relationships))))))
