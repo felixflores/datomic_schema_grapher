@@ -37,7 +37,7 @@
 (defn dot-nodes
   [schema]
   (for [[entity-name attributes] (group-as-entities schema)]
-    [entity-name {:label (node-label attributes)}]))
+    [entity-name {:label (node-label (sort #(compare (first %1) (first %2)) attributes))}]))
 
 (defn dot-relationship
   [[root dest-label cardinality]]
