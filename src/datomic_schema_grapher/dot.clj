@@ -4,15 +4,7 @@
             [dorothy.core :refer (subgraph node-attrs digraph dot show! save! graph-attrs)]))
 
 (def light-grey "#808080")
-
-(def color-pointer (atom 0))
-(defn edge-color
-  []
-  (swap! color-pointer inc)
-  (->> (cycle ["#441C14" "#15484C" "#257580" "#6E7D2C" "#CED796"])
-       (drop @color-pointer)
-       (take 1)
-       first))
+(def edge-colors ["#441C14" "#15484C" "#257580" "#6E7D2C" "#CED796"])
 
 (defn group-as-entities
   [schema]
@@ -47,20 +39,40 @@
   (for [[entity-name attributes] (group-as-entities schema)]
     [entity-name {:label (node-label (sort #(compare (first %1) (first %2)) attributes))}]))
 
+(defn circular-relationship?
+  [[root dest-label _]]
+  (= (namespace root) dest-label))
+
+
+(defn ref-node
+  [[root dest-label _]]
+  [(str dest-label "_ref") {:label dest-label :shape "rectangle" :style "dotted,rounded" :color light-grey}])
+
+(defn add-ref-colors
+  [ref-nodes]
+  (loop [nodes []
+         colors (cycle edge-colors)
+         ref-nodes ref-nodes]
+    (let [[root-label dest-ref-label edge-attrs] (first ref-nodes)]
+      (if (not-empty ref-nodes)
+        (recur (conj nodes [root-label dest-ref-label (merge edge-attrs {:color (first colors)})])
+               (rest colors)
+               (rest ref-nodes))
+        nodes))))
+
 (defn dot-relationship
-  [[root dest-label cardinality]]
+  [[root dest-label cardinality :as relationship]]
   (let [root-label (str (namespace root) ":" (name root))
         dest-ref-label (str dest-label "_ref")
-        edge-attrs {:arrowhead (if (= cardinality "one") "tee" "crow")
-                    :color (edge-color)}]
-    (if (= (namespace root) dest-label)
-      [[dest-ref-label {:label dest-label :shape "rectangle" :style "dotted,rounded" :color light-grey}]
-       [root-label dest-ref-label edge-attrs]]
-      [[root-label (str dest-label ":" dest-label) edge-attrs]])))
+        edge-attrs {:arrowhead (if (= cardinality "one") "tee" "crow")}]
+    (if (circular-relationship? relationship)
+      [root-label dest-ref-label edge-attrs]
+      [root-label (str dest-label ":" dest-label) edge-attrs])))
 
 (defn dot-relationships
   [relationships]
-  (reduce #(concat %1 %2) (map dot-relationship relationships)))
+  (concat (add-ref-colors (map dot-relationship relationships))
+          (map ref-node (filter circular-relationship? relationships))))
 
 (defn to-dot
   [schema relationships]

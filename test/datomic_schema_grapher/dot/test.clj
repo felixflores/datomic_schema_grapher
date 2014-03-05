@@ -53,6 +53,19 @@
          attr-unique "<font color=\"red\">attr2 : string</font>"
          attr-string "attr1 : string")))
 
+(deftest test-is-circular-relationship
+  (testing "Circular relationships are detected"
+    (are [x y] (= (circular-relationship? x) y)
+         '(:entity1/multi "entity1" "many") true
+         '(:entity1/entity2 "entity2" "one") false)))
+
+(deftest testing-add-ref-colors
+  (testing "Edge colors are properly selected for a given relationship"
+    (is (= (add-ref-colors [["entity1:multi" "entity1_ref" {:arrowhead "crow"}]
+                            ["entity1:self" "entity1_ref" {:arrowhead "crow"}]])
+           [["entity1:multi" "entity1_ref" {:color "#441C14", :arrowhead "crow"}]
+            ["entity1:self" "entity1_ref" {:color "#15484C", :arrowhead "crow"}]]))))
+
 (deftest test-node-label
   (testing "node-label"
     (are [x y] (= (node-label [x]) y)
@@ -62,7 +75,6 @@
 (deftest test-dot-relationship
   (testing "Relationships are properly mapped"
     (are [x y] (= (dot-relationship x) y)
-         '(:entity1/multi "entity2" "many") [["entity1:multi" "entity2:entity2" {:arrowhead "crow", :color "#15484C"}]]
-         '(:entity1/self "entity1" "one") [["entity1_ref" {:label "entity1", :shape "rectangle", :style "dotted,rounded", :color "#808080"}]
-                                           ["entity1:self" "entity1_ref" {:arrowhead "tee", :color "#257580"}]])))
+         '(:entity1/multi "entity2" "many") ["entity1:multi" "entity2:entity2" {:arrowhead "crow"}]
+         '(:entity1/self "entity1" "one") ["entity1:self" "entity1_ref" {:arrowhead "tee"}])))
 
