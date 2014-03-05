@@ -62,7 +62,7 @@
 (deftest test-dot-relationship
   (testing "Relationships are properly mapped"
     (are [x y] (= (dot-relationship x) y)
-         '(:entity1/multi "entity2" "many") [["entity1:multi" "entity2:entity2" {:arrowhead "crow"}]]
+         '(:entity1/multi "entity2" "many") [["entity1:multi" "entity2:entity2" {:arrowhead "crow", :color "#15484C"}]]
          '(:entity1/self "entity1" "one") [["entity1_ref" {:label "entity1", :shape "rectangle", :style "dotted,rounded", :color "#808080"}]
-                                           ["entity1:self" "entity1_ref" {:arrowhead "tee"}]])))
+                                           ["entity1:self" "entity1_ref" {:arrowhead "tee", :color "#257580"}]])))
 

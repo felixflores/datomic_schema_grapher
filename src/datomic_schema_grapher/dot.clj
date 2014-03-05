@@ -4,7 +4,15 @@
             [dorothy.core :refer (subgraph node-attrs digraph dot show! save! graph-attrs)]))
 
 (def light-grey "#808080")
-(def edge-colors ["#C0493F" "#C0573F" "#C06C3F" "#C0823F" "#C0913F"])
+
+(def color-pointer (atom 0))
+(defn edge-color
+  []
+  (swap! color-pointer inc)
+  (->> (cycle ["#441C14" "#15484C" "#257580" "#6E7D2C" "#CED796"])
+       (drop @color-pointer)
+       (take 1)
+       first))
 
 (defn group-as-entities
   [schema]
@@ -43,7 +51,8 @@
   [[root dest-label cardinality]]
   (let [root-label (str (namespace root) ":" (name root))
         dest-ref-label (str dest-label "_ref")
-        edge-attrs {:arrowhead (if (= cardinality "one") "tee" "crow")}]
+        edge-attrs {:arrowhead (if (= cardinality "one") "tee" "crow")
+                    :color (edge-color)}]
     (if (= (namespace root) dest-label)
       [[dest-ref-label {:label dest-label :shape "rectangle" :style "dotted,rounded" :color light-grey}]
        [root-label dest-ref-label edge-attrs]]
