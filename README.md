@@ -46,9 +46,12 @@ In order to use it as a lein plugin you must list it as a dependency *and* as a 
   :plugins [[datomic-schema-grapher "0.0.1"]])
 ```
 
+then
+
 ```bash
 lein graph-datomic <datomic:protocol://example>
 ```
+
 Note that the lein plugin will not work for in memory databases.
 Consider using the repl with in memory databases.
 
