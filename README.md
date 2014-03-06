@@ -37,10 +37,20 @@ lein deps
 
 ## Plugin
 
+In order to use it as a lein plugin you must list it as a dependency *and* as a plugin.
+
+```clojure
+; project.clj
+(defproject your-project "x.x.x"
+  :dependencies [[datomic-schema-grapher "0.0.1"]]
+  :plugins [[datomic-schema-grapher "0.0.1"]])
+```
+
 ```bash
 lein graph-datomic <datomic:protocol://example>
 ```
-Lein plugin will not work for in memory databases.
+Note that the lein plugin will not work for in memory databases.
+Consider using the repl with in memory databases.
 
 This project is still in the early stages of development.
 The API is likely to change.
@@ -48,3 +58,4 @@ The API is likely to change.
 ## License
 
 Copyright © 2014 MIT
+
