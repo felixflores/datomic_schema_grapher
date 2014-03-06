@@ -38,14 +38,12 @@ lein deps
 ## Plugin
 
 ```bash
-lein graph-datomic datomic:mem://example
+lein graph-datomic <datomic:protocol://example>
 ```
+Lein plugin will not work for in memory databases.
 
 This project is still in the early stages of development.
 The API is likely to change.
-
-See src/datomic_schema_grapher/core.clj for sample usage.
-You should see the schema after evaluating this file.
 
 ## License
 
